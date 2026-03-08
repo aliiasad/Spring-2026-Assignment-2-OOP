@@ -90,9 +90,24 @@
         return;
     }
 
+    // Brightness Function
+    void Image :: changeBrightness(int pixelChange) {
+
+        for (int i = 0; i < height; i++)    {
+            for (int j = 0; j < width; j++) {
+                if ((*(*(arrayOfPixels + i) + j) + pixelChange) > 255)  *(*(arrayOfPixels + i) + j) = 255;
+                else if ((*(*(arrayOfPixels + i) + j) + pixelChange) < 0)  *(*(arrayOfPixels + i) + j) = 0;
+                else *(*(arrayOfPixels + i) + j) += pixelChange;
+            }
+        }
+
+        return;
+    }
+
     int main()  {
         Image img;
         img.readImage("sample.pgm");
+        img.changeBrightness(50);
         img.saveImage("output.pgm");
         return 0;
     }
