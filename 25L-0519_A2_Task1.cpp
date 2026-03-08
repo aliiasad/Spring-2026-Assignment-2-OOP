@@ -134,10 +134,23 @@
         return;
     }
 
+    // Negate Function
+    void Image :: negate()  {
+
+        // 255 - current pixel = new pixel
+        for (int i = 0; i < height; i++)    {
+            for (int j = 0; j < width; j++) {
+                *(*(arrayOfPixels + i) + j) = 255 - *(*(arrayOfPixels + i) + j);
+            }
+        }
+
+        return;
+    }
+
     int main()  {
         Image img;
         img.readImage("sample.pgm");
-        img.flipImage("vertical");
+        img.negate();
         img.saveImage("output.pgm");
         return 0;
     }
