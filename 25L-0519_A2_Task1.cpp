@@ -104,10 +104,40 @@
         return;
     }
 
+    // Flip Image Function
+    void Image :: flipImage (string direction)  {
+
+        if (direction == "horizontal" || direction == "Horizontal") {
+            // for horizontal, fix rows (height) and reverse cols (width)
+            // untill middle col (width / 2) is reached
+            for (int i = 0; i < height; i++)    {
+                for (int j = 0; j < width / 2; j++) {
+                    int temp = *(*(arrayOfPixels + i) + j);
+                    *(*(arrayOfPixels + i) + j) = *(*(arrayOfPixels + i) + (width - 1 - j));
+                    *(*(arrayOfPixels + i) + (width - 1 - j)) = temp;
+                }
+            }
+        }
+        else if (direction == "vertical" || direction == "Vertical")    {
+            // for horizontal, fix cols (width) and reverse rows (height)
+            // untill middle row (height / 2) is reached
+            for (int i = 0; i < height / 2; i++)    {
+                for (int j = 0; j < width; j++) {
+                    int temp = *(*(arrayOfPixels + i) + j);
+                    *(*(arrayOfPixels + i) + j) = *(*(arrayOfPixels + (height - 1 -i)) + j);
+                    *(*(arrayOfPixels + (height - 1 - i)) + j) = temp;
+                }
+            }
+        }
+        else cout << "Invalid Operation Called. Try first CAPS or all SMALL" << endl;
+
+        return;
+    }
+
     int main()  {
         Image img;
         img.readImage("sample.pgm");
-        img.changeBrightness(50);
+        img.flipImage("vertical");
         img.saveImage("output.pgm");
         return 0;
     }
