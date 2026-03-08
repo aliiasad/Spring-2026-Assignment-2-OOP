@@ -43,17 +43,8 @@
         }
         delete[] arrayOfPixels;
     }
-    // Read Image Funcion
+    //Save Image Funcion
     void Image :: readImage (string sample)   {
-
-        // free old memory if exists
-        if (arrayOfPixels != nullptr) {
-            for (int i = 0; i < height; i++)
-                delete[] *(arrayOfPixels + i);
-            delete[] arrayOfPixels;
-            arrayOfPixels = nullptr;
-        }
-
         ifstream fin (sample);
         if (!fin) {
             cout << "File not found" << endl;
@@ -77,7 +68,7 @@
         return;
     }
 
-    // Save Image Function
+    // Read Image Function
     void Image :: saveImage (string sample)  {
         ofstream fout (sample);
         if (!fout) {
@@ -256,9 +247,6 @@
     }
 
     // Blur Filter Function
-    // applyFilter: implements a blur filter
-    // replaces each non-border pixel with the
-    // average of its 3x3 neighbourhood
     void Image :: applyFilter() {
         // create a copy so org is not changed
         int** copy = new int* [height];
