@@ -14,6 +14,8 @@
             // default constructor --> since data is to be read
             // from file and not gonna be input
             Image ();
+            // destructor
+            ~Image ();
             //functions to be implemented
             void readImage (string);    // reads from file
             void saveImage (string);    // reads into file
@@ -34,6 +36,13 @@
         arrayOfPixels = nullptr;
     }
 
+    // destructor
+    Image :: ~Image ()  {
+        for (int i = 0; i < height; i++)    {
+            delete[] *(arrayOfPixels + i);
+        }
+        delete[] arrayOfPixels;
+    }
     //Save Image Funcion
     void Image :: readImage (string sample)   {
         ifstream fin (sample);
