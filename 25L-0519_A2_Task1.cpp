@@ -50,8 +50,6 @@
             cout << "File not found" << endl;
             return;
         }
-        //string magic; // for P2
-        //int width, height, maxGreyVal;
 
         fin >> magic;
         fin >> width;
@@ -67,11 +65,34 @@
                 fin >> *(*(arrayOfPixels + i) + j);
             }
         }
-        
+        return;
+    }
+
+    // Read Image Function
+    void Image :: saveImage (string sample)  {
+        ofstream fout (sample);
+        if (!fout) {
+            cout << "File not found" << endl;
+            return;
+        }
+
+        fout << magic << endl;
+        fout << width << " " << height << endl;
+        fout << maxGreyVal << endl;
+
+        for (int i = 0; i < height; i++)    {
+            for (int j = 0; j < width; j++) {
+                fout << *(*(arrayOfPixels + i) + j) << " ";
+            }
+            fout << endl;
+        }
+
         return;
     }
 
     int main()  {
-
+        Image img;
+        img.readImage("sample.pgm");
+        img.saveImage("output.pgm");
         return 0;
     }
