@@ -147,10 +147,54 @@
         return;
     }
 
-    int main()  {
-        Image img;
-        img.readImage("sample.pgm");
-        img.negate();
-        img.saveImage("output.pgm");
-        return 0;
+    // Combine Images Function
+    void Image :: combineImages (Image other)  {
+        if (height != other.height) {
+            cout << "Heights don't match!" << endl;
+            return;
+        }
+        // calculate new width (here width is this->width)
+        int newWidth = width + other.width;
+
+        // new array for larger image
+        int** newArray = new int* [height];
+        for (int i = 0; i < height; i++)    {
+            *(newArray + i) = new int [newWidth];
+        }
+
+        // copy first image
+        for (int i = 0; i < height; i++)    {
+            for (int j = 0; j < width; j++) {
+                *(*(newArray + i) + j) = *(*(arrayOfPixels + i) + j);
+            }
+        }
+
+        // copy second image
+        for (int i = 0; i < height; i++)    {
+            for (int j = 0; j < other.width; j++)   {
+                *(*(newArray + i) + (width + j)) = *(*(other.arrayOfPixels + i) + j);
+            }
+        }
+
+        // delete old array
+        for (int i = 0; i < height; i++)    {
+            delete[] *(arrayOfPixels + i);
+        }
+        delete[] arrayOfPixels;
+
+        // point it to new array
+        arrayOfPixels = newArray;
+        width = newWidth;
+
+        return;
     }
+
+int main()  {
+    Image img1;
+    Image img2;
+    img1.readImage("sample.pgm");
+    img2.readImage("sample2.pgm");
+    img1.combineImages(img2);
+    img1.saveImage("output.pgm");
+    return 0;
+}
