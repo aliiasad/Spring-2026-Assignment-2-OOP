@@ -189,12 +189,66 @@
         return;
     }
 
-int main()  {
-    Image img1;
-    Image img2;
-    img1.readImage("sample.pgm");
-    img2.readImage("sample2.pgm");
-    img1.combineImages(img2);
-    img1.saveImage("output.pgm");
+    void Image :: medianFilter()    {
+        
+        // create a copy so org is not changed
+        int** copy = new int* [height];
+        for (int i = 0; i < height; i++)    {
+            *(copy + i) = new int [width];
+            for (int j = 0; j < width; j++) {
+                *(*(copy + i) + j) = *(*(arrayOfPixels + i) + j);
+            }
+        }
+
+        // note that there cannot be nine neighbours for any cell
+        // on the boundary row or boundary col, so ignore them
+        for (int i = 1; i < height - 1; i++)    {
+            for (int j = 1; j < width - 1; j++) {
+                // arry for all neighbours
+                int size = 9;
+                int arr[9], k = 0; // k is used to traverse arr
+                
+                // now in order to collect the neighbours we use
+                // -1 0 and 1 as the neighbours are one prev, one
+                // at same pos and one next
+
+                for (int ni = -1; ni <= 1; ni++)    {
+                    for (int nj = -1; nj <= 1; nj++)    {
+                        *(arr + (k++)) = *(*(copy + (i + ni)) + (j + nj));
+                    }
+                }
+
+                // sort the array arr
+                for (int x = 0; x < size - 1; x++)  {
+                    for (int y = 0; y < size - x - 1; y++)  {
+                        if (*(arr + y) > *(arr + (y + 1)))  {
+                            int temp = *(arr + j);
+                            *(arr + y) = *(arr + (y + 1));
+                            *(arr + (y + 1)) = temp;
+                        }
+                    }
+                }
+
+                // now finally replace the median value wchich is 4
+                *(*(arrayOfPixels + i) + j) = *(arr + 4); // here we change the value of 
+                // org array and hence for future the neighbours would change, so we made a copy
+
+                
+            }
+        } 
+        // delete copy
+                for (int i = 0; i < height; i++)    {
+                    delete[] *(copy + i);
+                }
+                delete[] copy;
+                
+        return;
+    }
+
+int main() {
+    Image img;
+    img.readImage("sample.pgm");
+    img.medianFilter();
+    img.saveImage("output.pgm");
     return 0;
 }
