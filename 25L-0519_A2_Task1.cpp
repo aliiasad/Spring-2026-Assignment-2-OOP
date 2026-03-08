@@ -24,7 +24,7 @@
             void negate ();
             void medianFilter ();
             void combineImages (Image);  // requires another image
-            void applyFilter ();
+            void applyFilter (); //i've used blur filter as it is similar to median filter
 
     };
 
@@ -189,6 +189,7 @@
         return;
     }
 
+    //Median Filter Function
     void Image :: medianFilter()    {
         
         // create a copy so org is not changed
@@ -222,7 +223,7 @@
                 for (int x = 0; x < size - 1; x++)  {
                     for (int y = 0; y < size - x - 1; y++)  {
                         if (*(arr + y) > *(arr + (y + 1)))  {
-                            int temp = *(arr + j);
+                            int temp = *(arr + y);
                             *(arr + y) = *(arr + (y + 1));
                             *(arr + (y + 1)) = temp;
                         }
@@ -234,6 +235,56 @@
                 // org array and hence for future the neighbours would change, so we made a copy
 
                 
+            }
+        } 
+        // delete copy
+                for (int i = 0; i < height; i++)    {
+                    delete[] *(copy + i);
+                }
+                delete[] copy;
+                
+        return;
+    }
+
+    // Blur Filter Function
+    void Image :: applyFilter() {
+        // create a copy so org is not changed
+        int** copy = new int* [height];
+        for (int i = 0; i < height; i++)    {
+            *(copy + i) = new int [width];
+            for (int j = 0; j < width; j++) {
+                *(*(copy + i) + j) = *(*(arrayOfPixels + i) + j);
+            }
+        }
+
+        // note that there cannot be nine neighbours for any cell
+        // on the boundary row or boundary col, so ignore them
+        for (int i = 1; i < height - 1; i++)    {
+            for (int j = 1; j < width - 1; j++) {
+                // arry for all neighbours
+                int size = 9;
+                int arr[9], k = 0; // k is used to traverse arr
+                
+                // now in order to collect the neighbours we use
+                // -1 0 and 1 as the neighbours are one prev, one
+                // at same pos and one next
+
+                for (int ni = -1; ni <= 1; ni++)    {
+                    for (int nj = -1; nj <= 1; nj++)    {
+                        *(arr + (k++)) = *(*(copy + (i + ni)) + (j + nj));
+                    }
+                }
+
+                // calculate average
+                int sum = 0;
+                for (int x = 0; x < size; x++)  {
+                    sum += *(arr + x);
+                }
+                int average = sum / 9;
+
+                // now finally replace i,j with average
+                *(*(arrayOfPixels + i) + j) = average; // here we change the value of 
+                // org array and hence for future the neighbours would change, so we made a copy
             }
         } 
         // delete copy
