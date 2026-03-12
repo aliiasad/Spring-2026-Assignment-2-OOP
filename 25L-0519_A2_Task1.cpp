@@ -41,13 +41,13 @@ Spell :: Spell(const Spell& dummy)  {
     spellName = cpy(dummy.spellName);
 }
 
-Spell& Spell :: operator=(const Spell& other) {
-    if (this == &other) return *this;
+Spell& Spell :: operator=(const Spell& dummy) {
+    if (this == &dummy) return *this;
     delete[] spellName;
-    spellName = cpy(other.spellName);
-    power = other.power;
-    manaCost = other.manaCost;
-    difficulty = other.difficulty;
+    spellName = cpy(dummy.spellName);
+    power = dummy.power;
+    manaCost = dummy.manaCost;
+    difficulty = dummy.difficulty;
     return *this;
 }
 
@@ -143,27 +143,27 @@ void SpellBook::displaySpellBook() {
     }
 }
 
-SpellBook::SpellBook(const SpellBook& other) {
-    capacity = other.capacity;
-    totalSpells = other.totalSpells;
-    ownerName = cpy(other.ownerName);
+SpellBook::SpellBook(const SpellBook& dummy) {
+    capacity = dummy.capacity;
+    totalSpells = dummy.totalSpells;
+    ownerName = cpy(dummy.ownerName);
     spells = new Spell[capacity];
     for (int i = 0; i < totalSpells; i++)
-        *(spells + i) = *(other.spells + i);
+        *(spells + i) = *(dummy.spells + i);
 }
 
-SpellBook& SpellBook::operator=(const SpellBook& other) {
-    if (this == &other) return *this;
+SpellBook& SpellBook::operator=(const SpellBook& dummy) {
+    if (this == &dummy) return *this;
     
     delete[] spells;
     delete[] ownerName;
     
-    capacity = other.capacity;
-    totalSpells = other.totalSpells;
-    ownerName = cpy(other.ownerName);
+    capacity = dummy.capacity;
+    totalSpells = dummy.totalSpells;
+    ownerName = cpy(dummy.ownerName);
     spells = new Spell[capacity];
     for (int i = 0; i < totalSpells; i++)
-        *(spells + i) = *(other.spells + i);
+        *(spells + i) = *(dummy.spells + i);
     
     return *this;
 }
