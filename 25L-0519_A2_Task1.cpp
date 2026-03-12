@@ -17,6 +17,8 @@ class Spell {
 
         // implementation
         void displaySpell();
+        char* getName();
+        Spell& operator=(const Spell&);
         Spell operator+(const Spell&);
         bool operator>(const Spell&);
         friend ostream& operator<<(ostream&, const Spell&);
@@ -37,6 +39,16 @@ Spell :: Spell(const Spell& dummy)  {
     manaCost = dummy.manaCost;
     difficulty = dummy.difficulty;
     spellName = cpy(dummy.spellName);
+}
+
+Spell& Spell :: operator=(const Spell& other) {
+    if (this == &other) return *this;
+    delete[] spellName;
+    spellName = cpy(other.spellName);
+    power = other.power;
+    manaCost = other.manaCost;
+    difficulty = other.difficulty;
+    return *this;
 }
 
 Spell Spell :: operator+(const Spell& dummy)    {
@@ -80,12 +92,62 @@ void Spell::displaySpell() {
     cout << "Difficulty: " << difficulty << endl;
 }
 
+char* Spell::getName() {
+    return spellName;
+}
+
 Spell :: ~Spell()   {
     delete[] spellName;
 }
 
+class SpellBook {
+    private:
+        Spell* spells;
+        int capacity;
+        int totalSpells;
+        char* ownerName;
+    public:
+        SpellBook(char*, int);
+        ~SpellBook();
+
+        // implementation
+        void learnSpell(Spell);
+        void displaySpellBook();
+};
+
+SpellBook :: SpellBook(char* owner, int cap)    {
+    ownerName = cpy(owner);
+    capacity = cap;
+    totalSpells = 0;
+    spells = new Spell [capacity];
+}
+
+void SpellBook::learnSpell(Spell s) {
+    if (totalSpells >= capacity) {
+        cout << "SpellBook is full!" << endl;
+    } else {
+        *(spells + totalSpells) = s;
+        totalSpells++; 
+    }
+}
+
+void SpellBook::displaySpellBook() {
+    // print owner name header
+    cout << "---" << ownerName << "\'s SpellBook---" << endl;
+    for (int i = 0; i < totalSpells; i++)   {
+        cout << i + 1 << ". " << (*(spells + i)).getName() << endl;
+    }
+    // loop through spells and print number + name
+}
+
+SpellBook :: ~SpellBook()   {
+    delete[] spells;
+    delete[] ownerName;
+}
+
 int main()  {
 
+    
     return 0;
 }
 
