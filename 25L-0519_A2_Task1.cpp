@@ -113,6 +113,10 @@ class SpellBook {
         // implementation
         void learnSpell(Spell);
         void displaySpellBook();
+
+        // additional safety
+        SpellBook(const SpellBook&);
+        SpellBook& operator=(const SpellBook&);
 };
 
 SpellBook :: SpellBook(char* owner, int cap)    {
@@ -137,7 +141,31 @@ void SpellBook::displaySpellBook() {
     for (int i = 0; i < totalSpells; i++)   {
         cout << i + 1 << ". " << (*(spells + i)).getName() << endl;
     }
-    // loop through spells and print number + name
+}
+
+SpellBook::SpellBook(const SpellBook& other) {
+    capacity = other.capacity;
+    totalSpells = other.totalSpells;
+    ownerName = cpy(other.ownerName);
+    spells = new Spell[capacity];
+    for (int i = 0; i < totalSpells; i++)
+        *(spells + i) = *(other.spells + i);
+}
+
+SpellBook& SpellBook::operator=(const SpellBook& other) {
+    if (this == &other) return *this;
+    
+    delete[] spells;
+    delete[] ownerName;
+    
+    capacity = other.capacity;
+    totalSpells = other.totalSpells;
+    ownerName = cpy(other.ownerName);
+    spells = new Spell[capacity];
+    for (int i = 0; i < totalSpells; i++)
+        *(spells + i) = *(other.spells + i);
+    
+    return *this;
 }
 
 SpellBook :: ~SpellBook()   {
