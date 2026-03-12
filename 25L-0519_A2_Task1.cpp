@@ -145,9 +145,74 @@ SpellBook :: ~SpellBook()   {
     delete[] ownerName;
 }
 
-int main()  {
+int main() {
+    // get spellbook owner and capacity
+    char owner[100];
+    int cap;
+    cout << "Enter owner name: ";
+    cin >> owner;
+    cout << "Enter spellbook capacity: ";
+    cin >> cap;
 
-    
+    SpellBook sb(owner, cap);
+
+    // get number of spells
+    int n;
+    cout << "Enter number of spells to add: ";
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        char name[100];
+        int pow, mana, diff;
+        cout << "Enter spell name: ";
+        cin >> name;
+        cout << "Enter power: ";
+        cin >> pow;
+        cout << "Enter mana cost: ";
+        cin >> mana;
+        cout << "Enter difficulty: ";
+        cin >> diff;
+        Spell s(name, pow, mana, diff);
+        sb.learnSpell(s);
+    }
+
+    // combine first two spells
+    if (n >= 2) {
+        char name1[100], name2[100];
+        int pow1, mana1, diff1, pow2, mana2, diff2;
+
+        cout << "\nEnter first spell to combine:" << endl;
+        cout << "Name: "; cin >> name1;
+        cout << "Power: "; cin >> pow1;
+        cout << "Mana: "; cin >> mana1;
+        cout << "Difficulty: "; cin >> diff1;
+
+        cout << "Enter second spell to combine:" << endl;
+        cout << "Name: "; cin >> name2;
+        cout << "Power: "; cin >> pow2;
+        cout << "Mana: "; cin >> mana2;
+        cout << "Difficulty: "; cin >> diff2;
+
+        Spell s1(name1, pow1, mana1, diff1);
+        Spell s2(name2, pow2, mana2, diff2);
+
+        // combine and learn
+        Spell combo = s1 + s2;
+        cout << "\nCombined spell:" << endl;
+        combo.displaySpell();
+        sb.learnSpell(combo);
+
+        // compare
+        if (s1 > s2)
+            cout << name1 << " is stronger" << endl;
+        else
+            cout << name2 << " is stronger" << endl;
+    }
+
+    // display spellbook
+    cout << endl;
+    sb.displaySpellBook();
+
     return 0;
 }
 
