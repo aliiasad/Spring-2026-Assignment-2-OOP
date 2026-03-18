@@ -3,6 +3,14 @@ using namespace std;
 
 char* cpy(const char*); // returns a new heap allocated string copy
 
+// input validation
+void clearInput();
+int readPositiveInt(const char*);
+int readNonNegativeInt(const char*);
+void readName(const char*, char*, int);
+
+// required classes
+
 class Spell {
     private:
         char* spellName;
@@ -78,9 +86,9 @@ bool Spell :: operator>(const Spell& dummy) {
 
 ostream& operator<<(ostream& cout, const Spell& dummy)    {
 
-    cout << "Name: " << dummy.spellName << " | Power: " 
-    << dummy.power << " | Mana: " << dummy.manaCost 
-    << " | Difficulty: " << dummy.difficulty << endl;
+    cout << "Spell: " << dummy.spellName << " | Power:" 
+    << dummy.power << " | Mana:" << dummy.manaCost 
+    << " | Difficulty:" << dummy.difficulty << endl;
 
     return cout;
 }
@@ -111,7 +119,7 @@ class SpellBook {
         ~SpellBook();
 
         // implementation
-        void learnSpell(Spell);
+        void learnSpell(const Spell&);
         void displaySpellBook();
 
         // additional safety
@@ -126,7 +134,7 @@ SpellBook :: SpellBook(char* owner, int cap)    {
     spells = new Spell [capacity];
 }
 
-void SpellBook::learnSpell(Spell s) {
+void SpellBook :: learnSpell(const Spell& s) {
     if (totalSpells >= capacity) {
         cout << "SpellBook is full!" << endl;
     } else {
@@ -135,15 +143,15 @@ void SpellBook::learnSpell(Spell s) {
     }
 }
 
-void SpellBook::displaySpellBook() {
+void SpellBook :: displaySpellBook() {
     // print owner name header
-    cout << "---" << ownerName << "\'s SpellBook---" << endl;
+    cout << "--- " << ownerName << "\'s SpellBook ---" << endl;
     for (int i = 0; i < totalSpells; i++)   {
         cout << i + 1 << ". " << (*(spells + i)).getName() << endl;
     }
 }
 
-SpellBook::SpellBook(const SpellBook& dummy) {
+SpellBook :: SpellBook(const SpellBook& dummy) {
     capacity = dummy.capacity;
     totalSpells = dummy.totalSpells;
     ownerName = cpy(dummy.ownerName);
@@ -152,7 +160,7 @@ SpellBook::SpellBook(const SpellBook& dummy) {
         *(spells + i) = *(dummy.spells + i);
 }
 
-SpellBook& SpellBook::operator=(const SpellBook& dummy) {
+SpellBook& SpellBook :: operator=(const SpellBook& dummy) {
     if (this == &dummy) return *this;
     
     delete[] spells;
@@ -176,71 +184,63 @@ SpellBook :: ~SpellBook()   {
 int main() {
     // get spellbook owner and capacity
     char owner[100];
-    int cap;
-    cout << "Enter owner name: ";
-    cin >> owner;
-    cout << "Enter spellbook capacity: ";
-    cin >> cap;
-
+    // read owner name, reject empty or whitespace-only input
+    readName("Enter owner name: ", owner, 100);
+    // read capacity, reject non-numeric, zero, and negative values
+    int cap = readPositiveInt("Enter spellbook capacity: ");
+ 
     SpellBook sb(owner, cap);
 
-    // get number of spells
-    int n;
-    cout << "Enter number of spells to add: ";
-    cin >> n;
-
+    int n = readPositiveInt("Enter number of spells to add: ");
+ 
     for (int i = 0; i < n; i++) {
         char name[100];
-        int pow, mana, diff;
-        cout << "Enter spell name: ";
-        cin >> name;
-        cout << "Enter power: ";
-        cin >> pow;
-        cout << "Enter mana cost: ";
-        cin >> mana;
-        cout << "Enter difficulty: ";
-        cin >> diff;
+
+        readName("Enter spell name: ", name, 100);
+        int pow  = readNonNegativeInt("Enter power: ");
+        int mana = readNonNegativeInt("Enter mana cost: ");
+        int diff = readNonNegativeInt("Enter difficulty: ");
+
         Spell s(name, pow, mana, diff);
         sb.learnSpell(s);
     }
-
+ 
     // combine first two spells
     if (n >= 2) {
         char name1[100], name2[100];
-        int pow1, mana1, diff1, pow2, mana2, diff2;
-
+ 
         cout << "\nEnter first spell to combine:" << endl;
-        cout << "Name: "; cin >> name1;
-        cout << "Power: "; cin >> pow1;
-        cout << "Mana: "; cin >> mana1;
-        cout << "Difficulty: "; cin >> diff1;
-
+        readName("Name: ", name1, 100);
+        int pow1  = readNonNegativeInt("Power: ");
+        int mana1 = readNonNegativeInt("Mana: ");
+        int diff1 = readNonNegativeInt("Difficulty: ");
+ 
         cout << "Enter second spell to combine:" << endl;
-        cout << "Name: "; cin >> name2;
-        cout << "Power: "; cin >> pow2;
-        cout << "Mana: "; cin >> mana2;
-        cout << "Difficulty: "; cin >> diff2;
-
+        readName("Name: ", name2, 100);
+        int pow2  = readNonNegativeInt("Power: ");
+        int mana2 = readNonNegativeInt("Mana: ");
+        int diff2 = readNonNegativeInt("Difficulty: ");
+ 
         Spell s1(name1, pow1, mana1, diff1);
         Spell s2(name2, pow2, mana2, diff2);
-
+ 
         // combine and learn
         Spell combo = s1 + s2;
         cout << "\nCombined spell:" << endl;
         combo.displaySpell();
         sb.learnSpell(combo);
-
+ 
         // compare
         if (s1 > s2)
             cout << name1 << " is stronger" << endl;
         else
             cout << name2 << " is stronger" << endl;
     }
-
+ 
     // display spellbook
     cout << endl;
     sb.displaySpellBook();
-
+ 
     return 0;
 }
 
@@ -250,4 +250,58 @@ char* cpy (const char* src)   {
     char* dest = new char[len + 1];
     for (int i = 0; i <= len; ++i) dest[i] = src[i];
     return dest;
+}
+
+void clearInput() {
+    cin.clear();
+    while (cin.get() != '\n');
+}
+ 
+int readPositiveInt(const char* prompt) {
+    int val;
+    cout << prompt;
+    while (!(cin >> val) || val <= 0) {
+        cout << "Invalid input. Enter a positive integer: ";
+        clearInput();
+    }
+    clearInput();
+    return val;
+}
+
+int readNonNegativeInt(const char* prompt) {
+    int val;
+    cout << prompt;
+    while (!(cin >> val) || val < 0) {
+        cout << "Invalid input. Enter a non-negative integer: ";
+        clearInput();
+    }
+    clearInput();
+    return val;
+}
+
+void readName(const char* prompt, char* buf, int size) {
+    while (true) {
+        cout << prompt;
+        cin.getline(buf, size);
+ 
+        if (cin.fail()) {
+            clearInput();
+            continue;
+        }
+ 
+        bool hasChar = false;
+        for (int i = 0; buf[i] != '\0'; i++) {
+            if (buf[i] != ' ' && buf[i] != '\t') {
+                hasChar = true;
+                break;
+            }
+        }
+ 
+        if (!hasChar) {
+            cout << "Name cannot be empty. Try again." << endl;
+            continue;
+        }
+ 
+        break;
+    }
 }
