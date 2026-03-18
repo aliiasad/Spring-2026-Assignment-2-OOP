@@ -1,5 +1,4 @@
     # include <iostream>
-    # include <string>
     # include <fstream>
     using namespace std;
 
@@ -9,21 +8,23 @@
             int height;
             int maxGreyVal;
             int** arrayOfPixels;
-            string magic;
+            char magic[3];
         public:
             // default constructor --> since data is to be read
             // from file and not gonna be input
             Image ();
+            Image(const Image&);
+            Image& operator=(const Image&);
             // destructor
             ~Image ();
             //functions to be implemented
-            void readImage (string);    // reads from file
-            void saveImage (string);    // reads into file
+            void readImage (const char*);    // reads from file
+            void saveImage (const char*);    // reads into file
             void changeBrightness (int);    //-255 to +255
-            void flipImage (string);  // requires direction
+            void flipImage (const char*);  // requires direction
             void negate ();
             void medianFilter ();
-            void combineImages (Image);  // requires another image
+            void combineImages (const Image&);  // requires andummy image
             void applyFilter (); //i've used blur filter as it is similar to median filter
 
     };
@@ -36,6 +37,41 @@
         arrayOfPixels = nullptr;
     }
 
+    // copy constructor
+    Image :: Image (const Image& other) {
+        width = other.width;
+        height = other.height;
+        maxGreyVal = other.maxGreyVal;
+        for (int i = 0; i < 3; i++) magic[i] = other.magic[i];
+        arrayOfPixels = new int* [height];
+        for (int i = 0; i < height; i++)    {
+            *(arrayOfPixels + i) = new int [width];
+            for (int j = 0; j < width; j++) {
+                *(*(arrayOfPixels + i) + j) = *(*(other.arrayOfPixels + i) + j);
+            }
+        }
+    }
+
+    // = oprtr overloaded
+    Image& Image :: operator= (const Image& other)  {
+        if (this == &other) return *this;
+        for (int i = 0; i < height; i++)
+            delete[] *(arrayOfPixels + i);
+        delete[] arrayOfPixels;
+        width = other.width;
+        height = other.height;
+        maxGreyVal = other.maxGreyVal;
+        for (int i = 0; i < 3; i++) magic[i] = other.magic[i];
+        arrayOfPixels = new int* [height];
+        for (int i = 0; i < height; i++)    {
+            *(arrayOfPixels + i) = new int [width];
+            for (int j = 0; j < width; j++) {
+                *(*(arrayOfPixels + i) + j) = *(*(other.arrayOfPixels + i) + j);
+            }
+        }
+        return *this;
+    }
+
     // destructor
     Image :: ~Image ()  {
         for (int i = 0; i < height; i++)    {
@@ -44,7 +80,7 @@
         delete[] arrayOfPixels;
     }
     // Read Image Funcion
-    void Image :: readImage (string sample)   {
+    void Image :: readImage (const char* sample)   {
 
         // free old memory if exists
         if (arrayOfPixels != nullptr) {
@@ -78,7 +114,7 @@
     }
 
     // Save Image Function
-    void Image :: saveImage (string sample)  {
+    void Image :: saveImage (const char* sample)  {
         ofstream fout (sample);
         if (!fout) {
             cout << "File not found" << endl;
@@ -114,9 +150,9 @@
     }
 
     // Flip Image Function
-    void Image :: flipImage (string direction)  {
+    void Image :: flipImage (const char*  direction)  {
 
-        if (direction == "horizontal" || direction == "Horizontal") {
+        if (*direction == 'H' || *direction == 'h') {
             // for horizontal, fix rows (height) and reverse cols (width)
             // untill middle col (width / 2) is reached
             for (int i = 0; i < height; i++)    {
@@ -127,7 +163,7 @@
                 }
             }
         }
-        else if (direction == "vertical" || direction == "Vertical")    {
+        else if (*direction == 'v' || *direction == 'V')    {
             // for horizontal, fix cols (width) and reverse rows (height)
             // untill middle row (height / 2) is reached
             for (int i = 0; i < height / 2; i++)    {
@@ -138,7 +174,7 @@
                 }
             }
         }
-        else cout << "Invalid Operation Called. Try first CAPS or all SMALL" << endl;
+        else cout << "Invalid Operation Called. Try first CAP or small initial!" << endl;
 
         return;
     }
@@ -157,13 +193,13 @@
     }
 
     // Combine Images Function
-    void Image :: combineImages (Image other)  {
-        if (height != other.height) {
+    void Image :: combineImages (const Image& dummy)  {
+        if (height != dummy.height) {
             cout << "Heights don't match!" << endl;
             return;
         }
         // calculate new width (here width is this->width)
-        int newWidth = width + other.width;
+        int newWidth = width + dummy.width;
 
         // new array for larger image
         int** newArray = new int* [height];
@@ -180,8 +216,8 @@
 
         // copy second image
         for (int i = 0; i < height; i++)    {
-            for (int j = 0; j < other.width; j++)   {
-                *(*(newArray + i) + (width + j)) = *(*(other.arrayOfPixels + i) + j);
+            for (int j = 0; j < dummy.width; j++)   {
+                *(*(newArray + i) + (width + j)) = *(*(dummy.arrayOfPixels + i) + j);
             }
         }
 
@@ -309,52 +345,59 @@
     }
 
 int main() {
+    char filename[100];
+    char filename2[100];
+
     // test readImage and saveImage
     Image img;
-    img.readImage("sample.pgm");
+    cout << "Enter image filename: ";
+    cin >> filename;
+    img.readImage(filename);
     img.saveImage("output.pgm");
     cout << "readImage and saveImage: done" << endl;
 
     // test changeBrightness
-    img.readImage("sample.pgm");
+    img.readImage(filename);
     img.changeBrightness(50);
     img.saveImage("output.pgm");
     cout << "changeBrightness +50: done" << endl;
 
     // test flipImage horizontal
-    img.readImage("sample.pgm");
+    img.readImage(filename);
     img.flipImage("horizontal");
     img.saveImage("output.pgm");
     cout << "flipImage horizontal: done" << endl;
 
     // test flipImage vertical
-    img.readImage("sample.pgm");
+    img.readImage(filename);
     img.flipImage("vertical");
     img.saveImage("output.pgm");
     cout << "flipImage vertical: done" << endl;
 
     // test negate
-    img.readImage("sample.pgm");
+    img.readImage(filename);
     img.negate();
     img.saveImage("output.pgm");
     cout << "negate: done" << endl;
 
     // test combineImages
     Image img2;
-    img.readImage("sample.pgm");
-    img2.readImage("sample2.pgm");
+    cout << "Enter second image filename: ";
+    cin >> filename2;
+    img.readImage(filename);
+    img2.readImage(filename2);
     img.combineImages(img2);
     img.saveImage("output.pgm");
     cout << "combineImages: done" << endl;
 
     // test medianFilter
-    img.readImage("sample.pgm");
+    img.readImage(filename);
     img.medianFilter();
     img.saveImage("output.pgm");
     cout << "medianFilter: done" << endl;
 
     // test applyFilter (blur)
-    img.readImage("sample.pgm");
+    img.readImage(filename);
     img.applyFilter();
     img.saveImage("output.pgm");
     cout << "applyFilter blur: done" << endl;
