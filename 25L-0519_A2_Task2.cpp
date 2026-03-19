@@ -8,7 +8,7 @@
             int height;
             int maxGreyVal;
             int** arrayOfPixels;
-            char magic[3];
+            char* magic;
         public:
             // default constructor --> since data is to be read
             // from file and not gonna be input
@@ -31,6 +31,8 @@
 
     // constructor
     Image :: Image ()   {
+        magic = new char[3];
+        *magic = '\0';
         width = 0;
         height = 0;
         maxGreyVal = 255;
@@ -38,35 +40,44 @@
     }
 
     // copy constructor
-    Image :: Image (const Image& other) {
-        width = other.width;
-        height = other.height;
-        maxGreyVal = other.maxGreyVal;
-        for (int i = 0; i < 3; i++) magic[i] = other.magic[i];
+    Image :: Image (const Image& dummy) {
+        magic = new char[3];
+        for (int i = 0; i < 3; i++) {
+            *(magic + i) = *(dummy.magic + i);
+        }
+        width = dummy.width;
+        height = dummy.height;
+        maxGreyVal = dummy.maxGreyVal;
         arrayOfPixels = new int* [height];
         for (int i = 0; i < height; i++)    {
             *(arrayOfPixels + i) = new int [width];
             for (int j = 0; j < width; j++) {
-                *(*(arrayOfPixels + i) + j) = *(*(other.arrayOfPixels + i) + j);
+                *(*(arrayOfPixels + i) + j) = *(*(dummy.arrayOfPixels + i) + j);
             }
         }
     }
 
     // = oprtr overloaded
-    Image& Image :: operator= (const Image& other)  {
-        if (this == &other) return *this;
-        for (int i = 0; i < height; i++)
+    Image& Image :: operator= (const Image& dummy)  {
+        if (this == &dummy) return *this;
+        for (int i = 0; i < height; i++)    {
             delete[] *(arrayOfPixels + i);
+        }
         delete[] arrayOfPixels;
-        width = other.width;
-        height = other.height;
-        maxGreyVal = other.maxGreyVal;
-        for (int i = 0; i < 3; i++) magic[i] = other.magic[i];
+
+        delete[] magic;
+        magic = new char[3];
+        for (int i = 0; i < 3; i++) {
+            *(magic + i) = *(dummy.magic + i);
+        }
+        width = dummy.width;
+        height = dummy.height;
+        maxGreyVal = dummy.maxGreyVal;
         arrayOfPixels = new int* [height];
         for (int i = 0; i < height; i++)    {
             *(arrayOfPixels + i) = new int [width];
             for (int j = 0; j < width; j++) {
-                *(*(arrayOfPixels + i) + j) = *(*(other.arrayOfPixels + i) + j);
+                *(*(arrayOfPixels + i) + j) = *(*(dummy.arrayOfPixels + i) + j);
             }
         }
         return *this;
@@ -78,6 +89,8 @@
             delete[] *(arrayOfPixels + i);
         }
         delete[] arrayOfPixels;
+
+        delete[] magic;
     }
     // Read Image Funcion
     void Image :: readImage (const char* sample)   {
